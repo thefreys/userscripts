@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Automate Deleting Facebook Comments and Reactions
+// @name         Automate Deleting Facebook Activity
 // @namespace    http://violentmonkey.com/
 // @version      1.0
-// @author       djfrey
+// @author       djfreys
 // @description  Automatically delete comments and reactions
 // @match        *://*facebook.com/*/allactivity*
 // @grant        GM_addStyle
@@ -14,104 +14,37 @@
   var category = getQueryVal('category_key');
   const btnId = 'fb-vm-script-btn';
 
-  //Categories where removing all items is based on checking checkboxes
-  const cbCat = {
-    //Comments and reactions
-    "COMMENTSCLUSTER": {
-      "label": "Comments",
-      "text": "Remove",
-      "confirm": "Remove"
-    },
-    "LIKEDPOSTS": {
-      "label": "Likes and reactions",
-      "text": "Remove",
-      "confirm": "Remove"
-    },
-    //Posts
-    "MANAGEPOSTSPHOTOSANDVIDEOS": {
-      "label": "Your posts, photos and videos",
-      "text": "Trash",
-      "confirm": "Move to trash"
-    },
-    "POSTSONOTHERSTIMELINES": {
-      "label": "Posts on other's timelines",
-      "text": "Remove",
-      "confirm": "Remove"
-    },
-    "YOURACTIVITYTAGGEDINSCHEMA": {
-      "text": "Remove Tags",
-      "confirm": "Remove tags"
-    },
-    "MARKETPLACEC2CRATINGS": {
-      "label": "Marketplace ratings you've given",
-      "text": "Delete",
-      "confirm": "Delete"
-    },
-    "LIKEDINTERESTS": {
-      "label": "Pages, page likes and interests",
-      "text": "Remove",
-      "confirm": "Remove"
-    },
-    "TRASH": {
-      "label": "Trash",
-      "text": "Delete",
-      "confirm": "Delete"
-    }
-  };
-
-   //Categories where removing all items is based on clicking a menu
-
-  //https://www.facebook.com/727260453/allactivity?activity_history=false&category_key=REMOVEDFRIENDS
-  const menuCat = {
-    "REMOVEDFRIENDS": {
-      "label": "Removed friends",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Delete", "confirm": "Delete"}
-      ]
-    },
-    "FOLLOWCLUSTER": {
-      "label": "Who you've followed and unfollowed",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Delete", "confirm": "Delete"}
-      ]
-    },
-    "CRISISRESPONSE": {
-      "label": "Your Crisis Response settings",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Delete", "confirm": "Delete"}
-      ]
-    },
-    "SEARCH": {
-      "label": "Your search history",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Delete", "confirm": "Delete"}
-      ]
-    },
-    "POSTSPHOTOSANDVIDEOS": {
-      "label": "Your posts, photos and videos",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Move to trash", "confirm": "Move to Trash"}
-      ]
-    },
-    "WALLCLUSTER": {
-      "label": "Other people's posts to your feed",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Delete", "confirm": "Delete"}
-      ]
-    },
-    "FACEBOOKEDITORRESPONSES": {
-      "label": "Facebook Editor",
-      "menu": "Action options",
-      "buttons": [
-        {"text": "Delete", "confirm": "Delete"}
-      ]
-    }
+  const activityCats = {
+    "COMMENTSCLUSTER": {"type": "with_checkbox", "label": "Comments",
+      "text": "Remove", "confirm": "Remove"},
+    "LIKEDPOSTS": {"type": "with_checkbox", "label": "Likes and reactions",
+      "text": "Remove", "confirm": "Remove"},
+    "MANAGEPOSTSPHOTOSANDVIDEOS": {"type": "with_checkbox", "label": "Your posts, photos and videos",
+      "text": "Trash", "confirm": "Move to trash"},
+    "POSTSONOTHERSTIMELINES": {"type": "with_checkbox", "label": "Posts on other's timelines",
+      "text": "Remove", "confirm": "Remove"},
+    "YOURACTIVITYTAGGEDINSCHEMA": {"type": "with_checkbox",
+      "text": "Remove Tags", "confirm": "Remove tags"},
+    "MARKETPLACEC2CRATINGS": {"type": "with_checkbox", "label": "Marketplace ratings you've given",
+      "text": "Delete", "confirm": "Delete"},
+    "LIKEDINTERESTS": {"type": "with_checkbox", "label": "Pages, page likes and interests",
+      "text": "Remove", "confirm": "Remove"},
+    "TRASH": {"type": "with_checkbox", "label": "Trash",
+      "text": "Delete", "confirm": "Delete"},
+    "REMOVEDFRIENDS": {"type": "with_menu", "label": "Removed friends", 
+      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
+    "FOLLOWCLUSTER": {"type": "", "label": "Who you've followed and unfollowed", 
+      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
+    "CRISISRESPONSE": {"type": "", "label": "Your Crisis Response settings", 
+      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
+    "SEARCH": {"type": "", "label": "Your search history", 
+      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
+    "POSTSPHOTOSANDVIDEOS": {"type": "", "label": "Your posts, photos and videos", 
+      "menu": "Action options", "buttons": [{"text": "Move to trash", "confirm": "Move to Trash"}]},
+    "WALLCLUSTER": {"type": "", "label": "Other people's posts to your feed", 
+      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
+    "FACEBOOKEDITORRESPONSES": {"type": "", "label": "Facebook Editor", 
+      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]}
   };
 
   var scriptRunning = false;
@@ -128,10 +61,16 @@
   }
 
   function doDelete() {
-    if (cbCat[category]) {
-      checkDelete();
-    } else if (menuCat[category]) {
-      menuDelete();
+    if (activityCats[category]) {
+      if (activityCats[category].type == "with_checkbox") {
+        checkDelete();
+      }
+      else if (activityCats[category].type == "with_menu") {
+        menuDelete();
+      }
+      else {
+        alert("Category " + category + " has unhandled type " + activityCats[category].type);
+      }
     } else {
       if (category) {
         alert("Couldn't find a way to delete " + category);
@@ -230,11 +169,11 @@
       await new Promise(r => setTimeout(r, 500));
     }
 
-    let removeButton = getNode("//span[text()='" + cbCat[category].text + "']");
+    let removeButton = getNode("//span[text()='" + activityCats[category].text + "']");
     if (removeButton) {
       removeButton.click();
       await new Promise(r => setTimeout(r, 1000));
-      let removeConfirm = document.querySelectorAll('[aria-label="' + cbCat[category].confirm + '"]')[1];
+      let removeConfirm = document.querySelectorAll('[aria-label="' + activityCats[category].confirm + '"]')[1];
       if (removeConfirm) {
         removeConfirm.click();
       }
