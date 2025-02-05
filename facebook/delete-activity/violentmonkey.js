@@ -12,44 +12,29 @@
   'use strict';
 
   var category = getQueryVal('category_key');
+  console.log('violentmonkey: '+category);
   const btnId = 'fb-vm-script-btn';
 
   const activityCats = {
-    "COMMENTSCLUSTER": {"type": "with_checkbox", "label": "Comments",
-      "text": "Remove", "confirm": "Remove"},
-    "LIKEDPOSTS": {"type": "with_checkbox", "label": "Likes and reactions",
-      "text": "Remove", "confirm": "Remove"},
-    "MANAGEPOSTSPHOTOSANDVIDEOS": {"type": "with_checkbox", "label": "Your posts, photos and videos",
-      "text": "Trash", "confirm": "Move to trash"},
-    "POSTSONOTHERSTIMELINES": {"type": "with_checkbox", "label": "Posts on other's timelines",
-      "text": "Remove", "confirm": "Remove"},
-    "YOURACTIVITYTAGGEDINSCHEMA": {"type": "with_checkbox",
-      "text": "Remove Tags", "confirm": "Remove tags"},
-    "MARKETPLACEC2CRATINGS": {"type": "with_checkbox", "label": "Marketplace ratings you've given",
-      "text": "Delete", "confirm": "Delete"},
-    "LIKEDINTERESTS": {"type": "with_checkbox", "label": "Pages, page likes and interests",
-      "text": "Remove", "confirm": "Remove"},
-    "TRASH": {"type": "with_checkbox", "label": "Trash",
-      "text": "Delete", "confirm": "Delete"},
-    "REMOVEDFRIENDS": {"type": "with_menu", "label": "Removed friends", 
-      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
-    "FOLLOWCLUSTER": {"type": "", "label": "Who you've followed and unfollowed", 
-      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
-    "CRISISRESPONSE": {"type": "", "label": "Your Crisis Response settings", 
-      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
-    "SEARCH": {"type": "", "label": "Your search history", 
-      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
-    "POSTSPHOTOSANDVIDEOS": {"type": "", "label": "Your posts, photos and videos", 
-      "menu": "Action options", "buttons": [{"text": "Move to trash", "confirm": "Move to Trash"}]},
-    "WALLCLUSTER": {"type": "", "label": "Other people's posts to your feed", 
-      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]},
-    "FACEBOOKEDITORRESPONSES": {"type": "", "label": "Facebook Editor", 
-      "menu": "Action options", "buttons": [{"text": "Delete", "confirm": "Delete"}]}
+    "COMMENTSCLUSTER": {"type":"1","text":"Remove","confirm":"Remove"},
+    "CRISISRESPONSE": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "FACEBOOKEDITORRESPONSES": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "FOLLOWCLUSTER": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "LIKEDINTERESTS": {"type":"1","text":"Remove","confirm":"Remove"},
+    "LIKEDPOSTS": {"type":"1","text":"Remove","confirm":"Remove"},
+    "MANAGEPOSTSPHOTOSANDVIDEOS": {"type":"1","text":"Trash","confirm":"Move to trash"},
+    "MARKETPLACEC2CRATINGS": {"type":"1","text":"Delete","confirm":"Delete"},
+    "POSTSONOTHERSTIMELINES": {"type":"1","text":"Remove","confirm":"Remove"},
+    "POSTSPHOTOSANDVIDEOS": {"type":"2","menu":"Action options","buttons": [{"text":"Move to trash","confirm":"Move to Trash"}]},
+    "REMOVEDFRIENDS": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "SEARCH": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "TRASH": {"type":"1","text":"Delete","confirm":"Delete"},
+    "WALLCLUSTER": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "YOURACTIVITYTAGGEDINSCHEMA": {"type":"1","text":"Remove Tags","confirm":"Remove tags"}
   };
 
   var scriptRunning = false;
 
-  //https://www.facebook.com/{userid}/allactivity?activity_history=false&category=COMMENTSCLUSTER&manage_mode=false&should_load_landing_page=false
   function getQueryVal(key) {
     let q = new URLSearchParams(window.location.search);
     let out = q.get(key);
@@ -62,10 +47,10 @@
 
   function doDelete() {
     if (activityCats[category]) {
-      if (activityCats[category].type == "with_checkbox") {
+      if (activityCats[category].type == "1") {
         checkDelete();
       }
-      else if (activityCats[category].type == "with_menu") {
+      else if (activityCats[category].type == "2") {
         menuDelete();
       }
       else {
@@ -83,7 +68,8 @@
   async function menuDelete() {
     var rcount = 0;
     var err = 0;
-    var params = menuCat[category];
+    var params = activityCats[category];
+    var menus = document.querySelectorAll('div[aria-label="' + params.menu + '"]');
 
     while (true) {
       if (document.evaluate("//span[text()='Nothing to show']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue) {
