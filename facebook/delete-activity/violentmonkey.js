@@ -14,6 +14,9 @@
   var category = getQueryVal('category_key');
   console.log('violentmonkey: '+category);
   const btnId = 'fb-vm-script-btn';
+  const selectId = 'fb-vm-script-select'; // ID for the select element
+  const baseUrl = 'https://www.somesite.com/?category_key='; // Base URL
+
 
   const activityCats = {
     "ACTIVESESSIONS": {"type": "TODO"},
@@ -339,6 +342,60 @@
           b.style.margin = "0px 10px";
           b.addEventListener('click', doDelete);
           m.prepend(b);
+
+          // Create the select element
+          var select = document.createElement("select");
+          select.id = selectId;
+
+          // Add options to the select (keys from activityCats)
+          for (const key in activityCats) {
+              const option = document.createElement("option");
+              option.value = key; // Use the key as the value
+              option.text = key; // Use the key as the text
+              select.appendChild(option);
+
+              // Set the default selected value based on activityCats (if available)
+              if (activityCats[key] && activityCats[key].type) {
+                if (activityCats[key].type === key) { // Direct comparison since key is the value now
+                  option.selected = true;
+                }
+              }
+          }
+          m.prepend(select);
+
+          // Set default value based on URL parameter
+          if (category && activityCats[category]) {  // Check key exists in activityCats
+            select.value = category;
+          } else {
+            // If no category_key in URL and no type in activityCats, default to first key.
+            const firstKey = Object.keys(activityCats)[0];
+            if (firstKey) {
+                select.value = firstKey;
+            }
+          }
+          
+          // Event listener for select change (no button needed)
+          select.addEventListener('change', function() {
+              const selectedValue = select.value;
+              const currentUrl = window.location.href; // Get the current URL
+              const newUrl = currentUrl.includes('?') ? // Check for existing query params
+                  currentUrl.replace(/category_key=[^&]*/, `category_key=${selectedValue}`) : // Update if present
+                  currentUrl + `?category_key=${selectedValue}`; // Add if not present
+
+              window.location.href = newUrl; // Redirect to the new URL
+          });
+
+          // Keep button functionality if needed
+          b.addEventListener('click', function() {
+              const selectedValue = select.value;
+              console.log(`Selected Activity: ${selectedValue}`);
+              const currentUrl = window.location.href; // Get the current URL
+              const newUrl = currentUrl.includes('?') ? // Check for existing query params
+                  currentUrl.replace(/category_key=[^&]*/, `category_key=${selectedValue}`) : // Update if present
+                  currentUrl + `?category_key=${selectedValue}`; // Add if not present
+              window.location.href = newUrl; // Redirect to the new URL
+          });
+
       }
     }, 100);
   }
