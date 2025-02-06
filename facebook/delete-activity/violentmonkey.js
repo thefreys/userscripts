@@ -47,12 +47,12 @@
     "DISCOVERABLECHANNELSINVITESRECEIVED": {"type": "TODO"},
     "DISCOVERABLECHANNELSINVITESSENT": {"type": "TODO"},
     "EFFECTSSEARCH": {"type": "TODO"},
-    "EVENTRSVPS": {"type": "TODO"},
+    "EVENTRSVPS": {"type": "3","menu":"Action options","buttons": [{"text":"Remove Me From Guest List"}]},
     "FACEBOOKEDITORRESPONSES": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "FANTASYGAMESPICKS": {"type": "TODO"},
     "FBGROUPCHATINVITESRECEIVED": {"type": "TODO"},
     "FBGROUPCHATINVITESSENT": {"type": "TODO"},
-    "FBSHORTS": {"type": "TODO"},
+    "FBSHORTS": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "FBSHORTSDRAFT": {"type": "TODO"},
     "FBSHORTSSAVEDAUDIO": {"type": "TODO"},
     "FBSHORTSSAVEDEFFECT": {"type": "TODO"},
@@ -373,7 +373,7 @@
                 select.value = firstKey;
             }
           }
-          
+
           // Event listener for select change (no button needed)
           select.addEventListener('change', function() {
               const selectedValue = select.value;
