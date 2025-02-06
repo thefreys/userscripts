@@ -16,10 +16,14 @@
   const btnId = 'fb-vm-script-btn';
 
   const activityCats = {
+    "ARCHIVEDSTORIES": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "CHECKINS": {"type":"1","text":"Trash","confirm":"Move to trash"},
     "COMMENTSCLUSTER": {"type":"1","text":"Remove","confirm":"Remove"},
+    "CONNECTIONSFRIENDSSCHEMA": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "CRISISRESPONSE": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "FACEBOOKEDITORRESPONSES": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "FOLLOWCLUSTER": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
+    "GROUPREACTIONS": {"type": ""},
     "LIKEDINTERESTS": {"type":"1","text":"Remove","confirm":"Remove"},
     "LIKEDPOSTS": {"type":"1","text":"Remove","confirm":"Remove"},
     "MANAGEPOSTSPHOTOSANDVIDEOS": {"type":"1","text":"Trash","confirm":"Move to trash"},
