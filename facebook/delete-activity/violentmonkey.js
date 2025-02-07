@@ -46,7 +46,7 @@
     "DISCOVERABLECHANNELSINVITESRECEIVED": {"type": "TODO"},
     "DISCOVERABLECHANNELSINVITESSENT": {"type": "TODO"},
     "EFFECTSSEARCH": {"type": "TODO"},
-    "EVENTRSVPS": {"type": "3","menu":"Action options","buttons": [{"text":"Remove Me From Guest List"}]},
+    "EVENTRSVPS": {"type": "2","menu":"Action options","buttons": [{"text":"Remove Me From Guest List"}]},
     "FACEBOOKEDITORRESPONSES": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "FANTASYGAMESPICKS": {"type": "TODO"},
     "FBGROUPCHATINVITESRECEIVED": {"type": "TODO"},
@@ -78,9 +78,9 @@
     "GROUPSEARCH": {"type": "TODO"},
     "HIDDENEVENTS": {"type": "TODO"},
     "HIDDENSTORIES": {"type": "TODO"},
-    "HISTORICALRELATIONSHIPS": {"type": "TODO"},
+    "HISTORICALRELATIONSHIPS": {"type":"2","menu":"Action options","buttons": [{"text":"Delete"}]},
     "INFOSAVEDFROMFORMS": {"type": "TODO"},
-    "INVITEDEVENTS": {"type": "TODO"},
+    "INVITEDEVENTS": {"type": "2","menu":"Action options","buttons": [{"text":"Remove Me From Guest List"}]},
     "LIKEDINTERESTS": {"type":"1","text":"Remove","confirm":"Remove"},
     "LIKEDPOSTS": {"type":"1","text":"Remove","confirm":"Remove"},
     "LIKEDPRODUCTS": {"type": "TODO"},
@@ -228,9 +228,11 @@
           let b = document.evaluate("//span[text()='"+params.buttons[i].text+"']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
           if (b) { //If the button exists, keep track of it and its corresponding confirm text, we can't test for the confirm button until it exists
             let b1 = {
-              "del": b,
-              "confirm": params.buttons[i].confirm
+              "del": b
             };
+            if (params.buttons[i].confirm !== undefined) {
+              b1.confirm = params.buttons[i].confirm;
+            }
             delButtons.push(b1);
           }
         }
@@ -249,8 +251,10 @@
               bClose.click();
               await new Promise(r => setTimeout(r, 1000));
             } else {
-              document.querySelectorAll('[aria-label="' + delButtons[i].confirm + '"][role="button"]')[0].click();
-              await new Promise(r => setTimeout(r, 2000));
+              if (delButtons[i].confirm !== undefined) {
+                document.querySelectorAll('[aria-label="' + delButtons[i].confirm + '"][role="button"]')[0].click();
+                await new Promise(r => setTimeout(r, 2000));
+              }
             }
 
           }
