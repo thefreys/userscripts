@@ -2,7 +2,7 @@
 // @name         Automate Deleting Facebook Activity
 // @namespace    http://violentmonkey.com/
 // @version      1.0
-// @author       djfreys
+// @author       theFreys
 // @description  Automatically delete comments and reactions
 // @match        *://*facebook.com/*/allactivity*
 // @grant        GM_addStyle
@@ -12,7 +12,6 @@
   'use strict';
 
   var category = getQueryVal('category_key');
-  console.log('violentmonkey: '+category);
   const btnId = 'fb-vm-script-btn';
   const selectId = 'fb-vm-script-select'; // ID for the select element
   const baseUrl = 'https://www.somesite.com/?category_key='; // Base URL
@@ -71,10 +70,10 @@
     "GROUPADMINTOMEMBERFEEDBACK": {"type": "TODO"},
     "GROUPBADGES": {"type": "TODO"},
     "GROUPLINKEDGROUP": {"type": "TODO"},
-    "GROUPMEMBERSHIP": {"type": "TODO"},
+    "GROUPMEMBERSHIP": {"type":"2","menu":"Action options","buttons": [{"text":"Delete your activity","confirm":"Delete"}]},
     "GROUPMEMBERWARNINGS": {"type": "TODO"},
     "GROUPMOMENTS": {"type": "TODO"},
-    "GROUPPOSTS": {"type": "TODO"},
+    "GROUPPOSTS": {"type":"2","menu":"Action options","buttons": [{"text":"Delete","confirm":"Delete"}]},
     "GROUPREACTIONS": {"type": ""},
     "GROUPSEARCH": {"type": "TODO"},
     "HIDDENEVENTS": {"type": "TODO"},
@@ -166,8 +165,6 @@
     "YOURAPPSPOSTS": {"type": "TODO"},
     "YOURPLACES": {"type": "TODO"}
   };
-
-  var scriptRunning = false;
 
   function getQueryVal(key) {
     let q = new URLSearchParams(window.location.search);
@@ -265,17 +262,6 @@
   //"checkbox"-type delete
   async function checkDelete() {
 
-    /*let b = document.getElementById(btnId);
-
-    if (scriptRunning) {
-      b.textContent = cat[category].btn.stop;
-      scriptRunning = false;
-      return;
-    } else {
-      b.textContent = cat[category].btn.start;
-      scriptRunning = true;
-    }*/
-
     let checkAll = document.querySelectorAll('input[type="checkbox"]')[0]; //The "All" checkbox should be the first checkbox on the page
 
     if (!checkAll) {
@@ -335,7 +321,6 @@
           clearInterval(interval);
           var b = document.createElement("button");
           b.id = btnId;
-          //b.textContent = cat[category].btn.start;
           b.textContent = "Start";
           b.style.zIndex = '9999';
           b.style.fontSize = "1.2rem";
@@ -353,13 +338,6 @@
               option.value = key; // Use the key as the value
               option.text = key; // Use the key as the text
               select.appendChild(option);
-
-              // Set the default selected value based on activityCats (if available)
-              if (activityCats[key] && activityCats[key].type) {
-                if (activityCats[key].type === key) { // Direct comparison since key is the value now
-                  option.selected = true;
-                }
-              }
           }
           m.prepend(select);
 
@@ -384,22 +362,9 @@
 
               window.location.href = newUrl; // Redirect to the new URL
           });
-
-          // Keep button functionality if needed
-          b.addEventListener('click', function() {
-              const selectedValue = select.value;
-              console.log(`Selected Activity: ${selectedValue}`);
-              const currentUrl = window.location.href; // Get the current URL
-              const newUrl = currentUrl.includes('?') ? // Check for existing query params
-                  currentUrl.replace(/category_key=[^&]*/, `category_key=${selectedValue}`) : // Update if present
-                  currentUrl + `?category_key=${selectedValue}`; // Add if not present
-              window.location.href = newUrl; // Redirect to the new URL
-          });
-
       }
     }, 100);
   }
-
 
   addTriggerButton();
 
